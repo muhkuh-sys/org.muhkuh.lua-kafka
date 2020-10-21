@@ -1,0 +1,30 @@
+diff -uNr librdkafka/CMakeLists.txt librdkafka_patched/CMakeLists.txt
+--- librdkafka/CMakeLists.txt	2020-09-20 00:39:20.000000000 +0200
++++ librdkafka_patched/CMakeLists.txt	2020-09-20 18:21:41.298125287 +0200
+@@ -41,8 +41,8 @@
+ # }
+ 
+ # ZLIB {
+-find_package(ZLIB QUIET)
+-if(ZLIB_FOUND)
++find_package(net.zlib-zlib REQUIRED)
++if(net.zlib-zlib_FOUND)
+   set(with_zlib_default ON)
+ else()
+   set(with_zlib_default OFF)
+diff -uNr librdkafka/src/CMakeLists.txt librdkafka_patched/src/CMakeLists.txt
+--- librdkafka/src/CMakeLists.txt	2020-09-20 00:39:20.000000000 +0200
++++ librdkafka_patched/src/CMakeLists.txt	2020-09-20 18:23:04.710128864 +0200
+@@ -203,9 +203,9 @@
+ endif()
+ 
+ if(WITH_ZLIB)
+-  find_package(ZLIB REQUIRED)
+-  target_include_directories(rdkafka PUBLIC ${ZLIB_INCLUDE_DIRS})
+-  target_link_libraries(rdkafka PUBLIC ZLIB::ZLIB)
++  find_package(net.zlib-zlib REQUIRED)
++  target_include_directories(rdkafka PUBLIC ${net.zlib-zlib_INCLUDE_DIR})
++  target_link_libraries(rdkafka PUBLIC net.zlib-zlib::zlibstatic)
+ endif()
+ 
+ if(WITH_ZSTD)

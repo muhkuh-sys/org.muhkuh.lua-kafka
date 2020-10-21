@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jonchki-artifact version="1.0">
+	<info group="org.lua"
+	      module="lua"
+	      artifact="lua"
+	      version="5.1.5.8"
+	      vcs-id="GITv5.1.5.8"
+	      extension="tar.xz"
+	      platform="ubuntu_20.04_x86_64">
+		<license name="MIT"/>
+		<author name="Lua.org, PUC-Rio" url="https://www.lua.org/" />
+		<description>
+			This module contains the LUA 5.1.5.8 interpreter in form of an executable with an accompanying shared library and the development files.
+		</description>
+	</info>
+	<dependencies/>
+</jonchki-artifact>

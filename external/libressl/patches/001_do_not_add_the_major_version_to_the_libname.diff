@@ -1,0 +1,48 @@
+diff -uNr libressl-3.1.4/crypto/CMakeLists.txt libressl-3.1.4_patched/crypto/CMakeLists.txt
+--- libressl-3.1.4/crypto/CMakeLists.txt	2020-08-17 17:24:08.000000000 +0200
++++ libressl-3.1.4_patched/crypto/CMakeLists.txt	2020-09-19 21:37:46.346068211 +0200
+@@ -985,9 +985,9 @@
+ 
+ export_symbol(crypto ${CMAKE_CURRENT_BINARY_DIR}/crypto_p.sym)
+ target_link_libraries(crypto ${PLATFORM_LIBS})
+-if (WIN32)
+-	set(CRYPTO_POSTFIX -${CRYPTO_MAJOR_VERSION})
+-endif()
++#if (WIN32)
++#	set(CRYPTO_POSTFIX -${CRYPTO_MAJOR_VERSION})
++#endif()
+ set_target_properties(crypto PROPERTIES
+ 	OUTPUT_NAME crypto${CRYPTO_POSTFIX}
+ 	ARCHIVE_OUTPUT_NAME crypto${CRYPTO_POSTFIX})
+diff -uNr libressl-3.1.4/ssl/CMakeLists.txt libressl-3.1.4_patched/ssl/CMakeLists.txt
+--- libressl-3.1.4/ssl/CMakeLists.txt	2020-07-06 09:25:50.000000000 +0200
++++ libressl-3.1.4_patched/ssl/CMakeLists.txt	2020-09-19 21:38:00.218110604 +0200
+@@ -62,9 +62,9 @@
+ 
+ export_symbol(ssl ${CMAKE_CURRENT_SOURCE_DIR}/ssl.sym)
+ target_link_libraries(ssl crypto ${PLATFORM_LIBS})
+-if (WIN32)
+-	set(SSL_POSTFIX -${SSL_MAJOR_VERSION})
+-endif()
++#if (WIN32)
++#	set(SSL_POSTFIX -${SSL_MAJOR_VERSION})
++#endif()
+ set_target_properties(ssl PROPERTIES
+ 	OUTPUT_NAME ssl${SSL_POSTFIX}
+ 	ARCHIVE_OUTPUT_NAME ssl${SSL_POSTFIX})
+diff -uNr libressl-3.1.4/tls/CMakeLists.txt libressl-3.1.4_patched/tls/CMakeLists.txt
+--- libressl-3.1.4/tls/CMakeLists.txt	2020-07-06 09:25:50.000000000 +0200
++++ libressl-3.1.4_patched/tls/CMakeLists.txt	2020-09-19 21:38:11.142143853 +0200
+@@ -39,9 +39,9 @@
+ 
+ export_symbol(tls ${CMAKE_CURRENT_SOURCE_DIR}/tls.sym)
+ target_link_libraries(tls ssl crypto ${PLATFORM_LIBS})
+-if (WIN32)
+-	set(TLS_POSTFIX -${TLS_MAJOR_VERSION})
+-endif()
++#if (WIN32)
++#	set(TLS_POSTFIX -${TLS_MAJOR_VERSION})
++#endif()
+ set_target_properties(tls PROPERTIES
+ 	OUTPUT_NAME tls${TLS_POSTFIX}
+ 	ARCHIVE_OUTPUT_NAME tls${TLS_POSTFIX})
