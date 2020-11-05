@@ -33,7 +33,11 @@ IF((${BUILDCFG_ONLY_JONCHKI_CFG} STREQUAL "OFF"))
 
 	FIND_PACKAGE(SWIG REQUIRED)
 
-	FIND_PACKAGE(net.zlib-zlib REQUIRED)
+	FIND_PACKAGE(net.zlib-zlib REQUIRED CONFIG)
+	GET_TARGET_PROPERTY(ZLIB_LIBRARY net.zlib-zlib::zlibstatic LOCATION)
+	SET(ZLIB_INCLUDE_DIR ${net.zlib-zlib_INCLUDE_DIR})
+	MESSAGE("ZLIB_LIBRARY: ${ZLIB_LIBRARY}")
+	MESSAGE("ZLIB_INCLUDE_DIR: ${ZLIB_INCLUDE_DIR}")
 
 	# Add a custom target for the swig runtime for LUA.
 	INCLUDE(${CMAKE_HOME_DIRECTORY}/cmake/muhkuh_swig_lua_runtime.cmake)
