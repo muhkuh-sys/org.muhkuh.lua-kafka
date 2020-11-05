@@ -98,7 +98,7 @@ IF((${BUILDCFG_ONLY_JONCHKI_CFG} STREQUAL "OFF"))
 	# Build a package for the selected platform.
 	#
 
-	SET(CPACK_OUTPUT_FILE_PREFIX ${CMAKE_BINARY_DIR}/../../repository/com/github/mozilla-services/lua_sandbox_extensions/kafka/${PROJECT_VERSION})
+	SET(CPACK_OUTPUT_FILE_PREFIX ${CMAKE_BINARY_DIR}/../../repository/org/muhkuh/lua/kafka/${PROJECT_VERSION})
 	SET(CPACK_INCLUDE_TOPLEVEL_DIRECTORY FALSE)
 	SET(CPACK_PACKAGE_FILE_NAME "lua${BUILDCFG_LUA_VERSION}-kafka-${PROJECT_VERSION}-${JONCHKI_PLATFORM}")
 
