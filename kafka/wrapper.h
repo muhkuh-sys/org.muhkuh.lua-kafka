@@ -50,6 +50,7 @@ public:
 
 	void poll(int iTimeout, void **ppvMsgOpaque, unsigned int *puiFailures);
 private:
+	void setClientId(rd_kafka_conf_t *ptConf);
 	int load_conf(lua_State *lua, rd_kafka_conf_t *conf, int idx);
 
 	unsigned int m_uiReferenceCounter;

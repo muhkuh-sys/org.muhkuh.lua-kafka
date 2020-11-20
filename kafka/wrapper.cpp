@@ -33,6 +33,34 @@ RdKafkaCore::~RdKafkaCore(void)
 
 
 
+/* Set the client software name and version in a configuration.
+ * Recommended here: https://github.com/edenhill/librdkafka/wiki/Language-bindings-development#reporting-client-software-name-and-version-to-broker
+ * Both operations are not fatal as they are only informational.
+ */
+void RdKafkaCore::setClientId(rd_kafka_conf_t *ptConf)
+{
+	rd_kafka_conf_res_t tCfgRes;
+	char acVersion[256];
+	char acError[512];
+
+
+	tCfgRes = rd_kafka_conf_set(ptConf, "client.software.name", "org.muhkuh.lua-kafka", acError, sizeof(acError));
+	if(tCfgRes)
+	{
+		fprintf(stderr, "Failed to set 'client.software.name': %s\n", acError);
+	}
+	/* Construct the version. */
+	snprintf(acVersion, sizeof(acVersion), "%s-librdkafka-%s", DIST_VERSION, rd_kafka_version_str());
+	printf("Settnig version to '%s'.\n", acVersion);
+	tCfgRes = rd_kafka_conf_set(ptConf, "client.software.version", acVersion, acError, sizeof(acError));
+	if(tCfgRes)
+	{
+		fprintf(stderr, "Failed to set 'client.software.version': %s\n", acError);
+	}
+}
+
+
+
 void RdKafkaCore::createCore(const char *pcBrokerList, lua_State *ptLuaState, lua_State *ptLuaStateForConfig, int iConfigTableIndex)
 {
 	rd_kafka_conf_t *ptConf;
@@ -42,6 +70,7 @@ void RdKafkaCore::createCore(const char *pcBrokerList, lua_State *ptLuaState, lu
 
 
 	ptConf = rd_kafka_conf_new();
+	setClientId(ptConf);
 	iResult = 0;
 	if( ptLuaStateForConfig!=NULL )
 	{
