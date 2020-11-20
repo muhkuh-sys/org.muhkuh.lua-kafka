@@ -23,8 +23,23 @@ RdKafkaCore::RdKafkaCore(void)
 
 RdKafkaCore::~RdKafkaCore(void)
 {
+	rd_kafka_resp_err_t tResult;
+	int iMessages;
+
+
 	if( m_ptRk!=NULL )
 	{
+		/* Try to flush any waiting messages.
+		 * Wait for a maximum of 2 seconds.
+		 */
+		tResult = rd_kafka_flush(m_ptRk, 2000);
+		if( tResult!=RD_KAFKA_RESP_ERR_NO_ERROR )
+		{
+			/* Show an error. */
+			iMessages = rd_kafka_outq_len(m_ptRk);
+			fprintf(stderr, "RdKafkaCore(%p): failed to flush, %d messages left in the queue: %s\n", this, iMessages, rd_kafka_err2str(tResult));
+		}
+
 		rd_kafka_destroy(m_ptRk);
 		rd_kafka_wait_destroyed(1000);
 		m_ptRk = NULL;
