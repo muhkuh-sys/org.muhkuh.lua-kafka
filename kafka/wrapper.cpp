@@ -342,14 +342,17 @@ int Topic::send(int iPartition, uintptr_t uiSequenceNr, const char *pcMessage)
 {
 	int iResult;
 	size_t sizMessage;
+	void *pvMessage;
 	void *pvOpaque;
+	rd_kafka_resp_err_t tError;
 
 
 	/* Get the size of the message. */
 	sizMessage = strlen(pcMessage);
+	pvMessage = (void*)pcMessage;
 
 	pvOpaque = (void*)uiSequenceNr;
-
+/*
 	errno = 0;
 	iResult = rd_kafka_produce(m_ptTopic, iPartition, RD_KAFKA_MSG_F_COPY, (void*)pcMessage, sizMessage, NULL, 0, pvOpaque);
 	if( iResult==-1 )
@@ -360,6 +363,24 @@ int Topic::send(int iPartition, uintptr_t uiSequenceNr, const char *pcMessage)
 	{
 		iResult = 0;
 	}
+*/
+	tError = rd_kafka_producev(
+		/* Producer handle */
+		m_ptRk,
+		/* Topic object. */
+		RD_KAFKA_V_RKT(m_ptTopic),
+		/* Make a copy of the payload. */
+		RD_KAFKA_V_MSGFLAGS(RD_KAFKA_MSG_F_COPY),
+		/* Message value and length */
+		RD_KAFKA_V_VALUE(pvMessage, sizMessage),
+		/* Per-Message opaque, provided in
+		 * delivery report callback as
+		 * msg_opaque. */
+		RD_KAFKA_V_OPAQUE(pvOpaque),
+		/* End sentinel */
+		RD_KAFKA_V_END
+	);
+	iResult = (int)tError;
 
 	return iResult;
 }
