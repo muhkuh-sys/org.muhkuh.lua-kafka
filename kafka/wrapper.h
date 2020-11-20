@@ -46,6 +46,9 @@ public:
 	static void messageCallbackStatic(rd_kafka_t *ptRk, const rd_kafka_message_t *ptRkMessage, void *pvOpaque);
 	void messageCallback(rd_kafka_t *ptRk, const rd_kafka_message_t *ptRkMessage);
 
+	static void errorCallbackStatic(rd_kafka_t *ptRk, int iErr, const char *pcReason, void *pvOpaque);
+	void errorCallback(rd_kafka_t *ptRk, int iErr, const char *pcReason);
+
 	rd_kafka_t *_getRk(void);
 
 	void poll(int iTimeout, void **ppvMsgOpaque, unsigned int *puiFailures);

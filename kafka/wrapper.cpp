@@ -85,7 +85,7 @@ void RdKafkaCore::createCore(const char *pcBrokerList, lua_State *ptLuaState, lu
 	{
 		rd_kafka_conf_set_opaque(ptConf, this);
 		rd_kafka_conf_set_dr_msg_cb(ptConf, RdKafkaCore::messageCallbackStatic);
-
+		rd_kafka_conf_set_error_cb(ptConf, RdKafkaCore::errorCallbackStatic);
 		rd_kafka_conf_set_log_cb(ptConf, NULL); // disable logging
 		rd_kafka_conf_set_stats_cb(ptConf, NULL); // disable stats
 
@@ -151,6 +151,24 @@ void RdKafkaCore::messageCallback(rd_kafka_t *ptRk, const rd_kafka_message_t *pt
 	{
 		++m_uiFailures;
 	}
+}
+
+
+
+void RdKafkaCore::errorCallbackStatic(rd_kafka_t *ptRk, int iErr, const char *pcReason, void *pvOpaque)
+{
+	RdKafkaCore *ptThis;
+
+
+	ptThis = (RdKafkaCore*)pvOpaque;
+	ptThis->errorCallback(ptRk, iErr, pcReason);
+}
+
+
+
+void RdKafkaCore::errorCallback(rd_kafka_t *ptRk, int iErr, const char *pcReason)
+{
+	fprintf(stderr, "rdkafka error %d: %s\n", iErr, pcReason);
 }
 
 
