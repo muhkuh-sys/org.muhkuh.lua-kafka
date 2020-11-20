@@ -66,7 +66,7 @@ void RdKafkaCore::setClientId(rd_kafka_conf_t *ptConf)
 	}
 	/* Construct the version. */
 	snprintf(acVersion, sizeof(acVersion), "%s-librdkafka-%s", DIST_VERSION, rd_kafka_version_str());
-	printf("Settnig version to '%s'.\n", acVersion);
+	printf("RdKafkaCore(%p): Setting version to '%s'.\n", this, acVersion);
 	tCfgRes = rd_kafka_conf_set(ptConf, "client.software.version", acVersion, acError, sizeof(acError));
 	if(tCfgRes)
 	{
@@ -166,10 +166,38 @@ void RdKafkaCore::messageCallbackStatic(rd_kafka_t *ptRk, const rd_kafka_message
 
 void RdKafkaCore::messageCallback(rd_kafka_t *ptRk, const rd_kafka_message_t *ptRkMessage)
 {
-	m_pvMsgOpaque = ptRkMessage->_private;
-	if( ptRkMessage->err!=RD_KAFKA_RESP_ERR_NO_ERROR )
+	rd_kafka_topic_t *ptTopic;
+	void *pvTopic;
+	Topic *ptTopicObject;
+	uintptr_t uiSequenceNr;
+
+
+	/* Try to get the pointer to the topic object. */
+	pvTopic = NULL;
+	ptTopic = ptRkMessage->rkt;
+	if( ptTopic!=NULL )
 	{
-		++m_uiFailures;
+		pvTopic = rd_kafka_topic_opaque(ptRkMessage->rkt);
+	}
+	if( pvTopic!=NULL )
+	{
+		ptTopicObject = (Topic*)pvTopic;
+		ptTopicObject->onMessage(ptRkMessage);
+	}
+	else
+	{
+		/* No topic object available. Try to print something here. */
+		uiSequenceNr = (uintptr_t)(ptRkMessage->_private);
+		m_pvMsgOpaque = ptRkMessage->_private;
+		if( ptRkMessage->err==RD_KAFKA_RESP_ERR_NO_ERROR )
+		{
+			printf("RdKafkaCore(%p): Message %" PRIuPTR " delivered.\n", this, uiSequenceNr);
+		}
+		else
+		{
+			++m_uiFailures;
+			printf("RdKafkaCore(%p): Failed to deliver message %" PRIuPTR ": %s\n", this, uiSequenceNr, rd_kafka_err2str(ptRkMessage->err));
+		}
 	}
 }
 
@@ -188,7 +216,7 @@ void RdKafkaCore::errorCallbackStatic(rd_kafka_t *ptRk, int iErr, const char *pc
 
 void RdKafkaCore::errorCallback(rd_kafka_t *ptRk, int iErr, const char *pcReason)
 {
-	fprintf(stderr, "rdkafka error %d: %s\n", iErr, pcReason);
+	fprintf(stderr, "RdKafkaCore(%p): rdkafka error %d: %s\n", this, iErr, pcReason);
 }
 
 
@@ -297,14 +325,23 @@ int RdKafkaCore::load_conf(lua_State *lua, rd_kafka_conf_t *conf, int idx)
 /*--------------------------------------------------------------------------*/
 
 Topic::Topic(RdKafkaCore *ptCore, lua_State *ptLuaState, const char *pcTopic, lua_State *ptLuaStateForConfig, int iConfigTableIndex)
- : m_ptCore(NULL)
+ : m_ptRk(NULL)
+ , m_ptCore(NULL)
+ , m_pcTopic(NULL)
  , m_ptTopic(NULL)
 {
 	rd_kafka_topic_conf_t *ptConf;
 	int iResult;
 
 
+	m_ptRk = ptCore->_getRk();
+
+	m_pcTopic = strdup(pcTopic);
+
 	ptConf = rd_kafka_topic_conf_new();
+	/* Add the pointer to this class to the topic instance. */
+	rd_kafka_topic_conf_set_opaque(ptConf, this);
+	/* Load the configuration from a LUA table (if available). */
 	if( ptLuaStateForConfig!=NULL )
 	{
 		iResult = load_topic_conf(ptLuaStateForConfig, ptConf, iConfigTableIndex);
@@ -315,13 +352,13 @@ Topic::Topic(RdKafkaCore *ptCore, lua_State *ptLuaState, const char *pcTopic, lu
 		}
 	}
 
-	m_ptTopic = rd_kafka_topic_new(ptCore->_getRk(), pcTopic, ptConf);
+	m_ptTopic = rd_kafka_topic_new(m_ptRk, pcTopic, ptConf);
 	if( m_ptTopic==NULL )
 	{
 		rd_kafka_topic_conf_destroy(ptConf);
 		luaL_error(ptLuaState, "rd_kafka_topic_new failed");
 	}
-	
+
 	m_ptCore = ptCore;
 	m_ptCore->reference();
 }
@@ -333,6 +370,12 @@ Topic::~Topic(void)
 	if( m_ptTopic!=NULL )
 	{
 		rd_kafka_topic_destroy(m_ptTopic);
+	}
+
+	if( m_pcTopic!=NULL )
+	{
+		free(m_pcTopic);
+		m_pcTopic = NULL;
 	}
 
 	if( m_ptCore!=NULL )
