@@ -81,41 +81,46 @@ void RdKafkaCore::createCore(const char *pcBrokerList, lua_State *ptLuaState, lu
 	rd_kafka_conf_t *ptConf;
 	rd_kafka_t *ptRk;
 	int iResult;
+	rd_kafka_conf_res_t tConfRes;
 	char acError[512];
 
 
 	ptConf = rd_kafka_conf_new();
 	setClientId(ptConf);
-	iResult = 0;
-	if( ptLuaStateForConfig!=NULL )
-	{
-		iResult = load_conf(ptLuaState, ptConf, iConfigTableIndex);
-	}
-	if( iResult!=0 )
+
+	/* Set the bootstrap server as "bootstrap.servers" in the configuration. */
+	tConfRes = rd_kafka_conf_set(ptConf, "bootstrap.servers", pcBrokerList, acError, sizeof(acError));
+	if( tConfRes!=RD_KAFKA_CONF_OK )
 	{
 		rd_kafka_conf_destroy(ptConf);
-		luaL_error(ptLuaState, "Failed to read the config.");
+		luaL_error(ptLuaState, "Failed to set the bootstrap servers: %s", acError);
 	}
 	else
 	{
-		rd_kafka_conf_set_opaque(ptConf, this);
-		rd_kafka_conf_set_dr_msg_cb(ptConf, RdKafkaCore::messageCallbackStatic);
-		rd_kafka_conf_set_error_cb(ptConf, RdKafkaCore::errorCallbackStatic);
-		rd_kafka_conf_set_log_cb(ptConf, NULL); // disable logging
-		rd_kafka_conf_set_stats_cb(ptConf, NULL); // disable stats
-
-		ptRk = rd_kafka_new(RD_KAFKA_PRODUCER, ptConf, acError, sizeof(acError));
-		if( ptRk==NULL )
+		iResult = 0;
+		if( ptLuaStateForConfig!=NULL )
 		{
-			rd_kafka_conf_destroy(ptConf); // the producer has not taken ownership
-			fprintf(stderr, "rd_kafka_new failed: %s\n", acError);
-			luaL_error(ptLuaState, "rd_kafka_new failed: %s", acError);
+			iResult = load_conf(ptLuaState, ptConf, iConfigTableIndex);
+		}
+		if( iResult!=0 )
+		{
+			rd_kafka_conf_destroy(ptConf);
+			luaL_error(ptLuaState, "Failed to read the config.");
 		}
 		else
 		{
-			if( rd_kafka_brokers_add(ptRk, pcBrokerList)==0 )
+			rd_kafka_conf_set_opaque(ptConf, this);
+			rd_kafka_conf_set_dr_msg_cb(ptConf, RdKafkaCore::messageCallbackStatic);
+			rd_kafka_conf_set_error_cb(ptConf, RdKafkaCore::errorCallbackStatic);
+			rd_kafka_conf_set_log_cb(ptConf, NULL); // disable logging
+			rd_kafka_conf_set_stats_cb(ptConf, NULL); // disable stats
+
+			ptRk = rd_kafka_new(RD_KAFKA_PRODUCER, ptConf, acError, sizeof(acError));
+			if( ptRk==NULL )
 			{
-				luaL_error(ptLuaState, "invalid broker list");
+				rd_kafka_conf_destroy(ptConf); // the producer has not taken ownership
+				fprintf(stderr, "rd_kafka_new failed: %s\n", acError);
+				luaL_error(ptLuaState, "rd_kafka_new failed: %s", acError);
 			}
 			else
 			{
