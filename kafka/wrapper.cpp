@@ -441,6 +441,20 @@ Producer::~Producer(void)
 
 
 
+void Producer::poll(uintptr_t *puiUINT_OR_NIL, unsigned int *puiUINT_OUT, int iTimeout)
+{
+	void *pvMsgOpaque;
+	unsigned int uiFailures;
+
+
+	m_ptCore->poll(iTimeout, &pvMsgOpaque, &uiFailures);
+
+	*puiUINT_OR_NIL = (uintptr_t)pvMsgOpaque;
+	*puiUINT_OUT = uiFailures;
+}
+
+
+
 Topic *Producer::create_topic(lua_State *MUHKUH_LUA_STATE, const char *pcTopic, lua_State *ptLuaStateForTableAccessOptional)
 {
 	Topic *ptTopic;

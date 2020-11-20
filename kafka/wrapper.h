@@ -86,6 +86,8 @@ public:
 	Producer(lua_State *MUHKUH_LUA_STATE, const char *pcBrokerList, lua_State *ptLuaStateForTableAccessOptional);
 	~Producer(void);
 
+	void poll(uintptr_t *puiUINT_OR_NIL, unsigned int *puiUINT_OUT, int iTimeout=0);
+
 	Topic *create_topic(lua_State *MUHKUH_LUA_STATE, const char *pcTopic, lua_State *ptLuaStateForTableAccessOptional);
 
 #ifndef SWIG
