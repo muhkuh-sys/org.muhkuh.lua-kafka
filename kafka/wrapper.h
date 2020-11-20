@@ -24,6 +24,7 @@ extern "C" {
 
 
 typedef int RESULT_UINT;
+typedef int RESULT_INT_TRUE_OR_NIL_WITH_ERR;
 
 
 const char* version(void);
@@ -71,15 +72,22 @@ public:
 	Topic(RdKafkaCore *ptCore, lua_State *ptLuaState, const char *pcTopic, lua_State *ptLuaStateForConfig, int iConfigTableIndex);
 	~Topic(void);
 
-	RESULT_UINT send(int iPartition, uintptr_t uiSequenceNr, const char *pcMessage);
+	RESULT_INT_TRUE_OR_NIL_WITH_ERR send(int iPartition, uintptr_t uiSequenceNr, const char *pcMessage);
 
 	void poll(uintptr_t *puiUINT_OR_NIL, unsigned int *puiUINT_OUT, int iTimeout=0);
+	const char *error2string(int iError);
+
+#ifndef SWIG
+	void onMessage(const rd_kafka_message_t *ptRkMessage);
 
 private:
 	int load_topic_conf(lua_State *ptLua, rd_kafka_topic_conf_t *ptConf, int idx);
 
 	RdKafkaCore *m_ptCore;
+	char *m_pcTopic;
 	rd_kafka_topic_t *m_ptTopic;
+	rd_kafka_t *m_ptRk;
+#endif
 };
 
 

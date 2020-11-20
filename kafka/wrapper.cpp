@@ -406,6 +406,37 @@ void Topic::poll(uintptr_t *puiUINT_OR_NIL, unsigned int *puiUINT_OUT, int iTime
 
 
 
+void Topic::onMessage(const rd_kafka_message_t *ptRkMessage)
+{
+	rd_kafka_resp_err_t tError;
+	uintptr_t uiSequenceNr;
+
+
+	tError = ptRkMessage->err;
+	uiSequenceNr = (uintptr_t)(ptRkMessage->_private);
+	if( tError==RD_KAFKA_RESP_ERR_NO_ERROR )
+	{
+		printf("Topic(%p): Message %" PRIuPTR " delivered.\n", this, uiSequenceNr);
+	}
+	else
+	{
+		printf("Topic(%p): Failed to deliver message %" PRIuPTR ": %s\n", this, uiSequenceNr, rd_kafka_err2str(tError));
+	}
+}
+
+
+
+const char *Topic::error2string(int iError)
+{
+	rd_kafka_resp_err_t tError;
+
+
+	tError = (rd_kafka_resp_err_t)iError;
+	return rd_kafka_err2str(tError);
+}
+
+
+
 int Topic::load_topic_conf(lua_State *ptLua, rd_kafka_topic_conf_t *ptConf, int idx)
 {
   if (!ptConf) {

@@ -135,6 +135,25 @@
 %}
 
 
+/* Take the return value which must be an integer and translate it into a
+ * boolean "true" if it is 0. All other values are converted to a "nil" with
+ * the string representation of the error.
+ */
+%typemap(out) RESULT_INT_TRUE_OR_NIL_WITH_ERR
+%{
+	if( $1==0 )
+	{
+		lua_pushboolean(L, 1);
+		SWIG_arg = 1;
+	}
+	else
+	{
+		lua_pushnil(L);
+		lua_pushstring(L, arg1->error2string($1));
+		SWIG_arg = 2;
+	}
+%}
+
 
 /* The "create_topic" method of the "Producer" object returns a new "Topic" object. It must be freed by the LUA interpreter. */
 %newobject Producer::create_topic;
