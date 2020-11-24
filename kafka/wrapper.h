@@ -29,6 +29,9 @@ typedef int RESULT_INT_WITH_ERR;
 
 const char* version(void);
 
+#ifndef SWIG
+void kafka_initialize_error_codes(lua_State *ptLuaState);
+#endif
 
 
 /* Do not wrap the core class, it can not be accessed directly from LUA. */

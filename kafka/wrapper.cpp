@@ -10,6 +10,54 @@ const char* version(void)
 	return DIST_VERSION;
 }
 
+
+
+void kafka_initialize_error_codes(lua_State *ptLuaState)
+{
+	int iTop;
+	int iType;
+	size_t sizErrDescs;
+	const struct rd_kafka_err_desc *ptCnt;
+	const struct rd_kafka_err_desc *ptEnd;
+	const char *pcName;
+
+	/* Get the global "kafka". */
+	iTop = lua_gettop(ptLuaState);
+	lua_getglobal(ptLuaState, "kafka");
+	iType = lua_type(ptLuaState, iTop+1);
+	if( iType==LUA_TTABLE )
+	{
+		/* Store the table name for later. */
+		lua_pushstring(ptLuaState, "RD_KAFKA_RESP_ERR");
+		/* Create a new table. */
+		lua_newtable(ptLuaState);
+
+		rd_kafka_get_err_descs(&ptCnt, &sizErrDescs);
+		ptEnd = ptCnt + sizErrDescs;
+		while( ptCnt<ptEnd )
+		{
+			pcName = ptCnt->name;
+			if( pcName!=NULL )
+			{
+				lua_pushstring(ptLuaState, pcName);
+#if LUA_VERSION_NUM>=504
+				lua_pushinteger(ptLuaState, ptCnt->code);
+#else
+				lua_pushnumber(ptLuaState, ptCnt->code);
+#endif
+				lua_rawset(ptLuaState, iTop+3);
+			}
+
+			++ptCnt;
+		}
+
+		/* Add the errors to the "kafka" table. */
+		lua_rawset(ptLuaState, iTop+1);
+	}
+	lua_pop(ptLuaState, 1);
+}
+
+
 /*--------------------------------------------------------------------------*/
 
 RdKafkaCore::RdKafkaCore(void)

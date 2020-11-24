@@ -8,6 +8,12 @@
 %}
 
 
+%init
+{
+	/* Initialize the list of error codes. */
+	kafka_initialize_error_codes(L);
+}
+
 /* This typemap adds "SWIGTYPE_" to the name of the input parameter to
  * construct the swig typename. The parameter name must match the definition
  * in the wrapper.
