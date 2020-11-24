@@ -87,6 +87,7 @@ private:
 	char *m_pcTopic;
 	rd_kafka_topic_t *m_ptTopic;
 	rd_kafka_t *m_ptRk;
+	uintptr_t m_uiSequenceNr;
 #endif
 };
 

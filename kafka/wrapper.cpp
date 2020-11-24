@@ -329,6 +329,7 @@ Topic::Topic(RdKafkaCore *ptCore, lua_State *ptLuaState, const char *pcTopic, lu
  , m_ptCore(NULL)
  , m_pcTopic(NULL)
  , m_ptTopic(NULL)
+ , m_uiSequenceNr(0)
 {
 	rd_kafka_topic_conf_t *ptConf;
 	int iResult;
@@ -386,7 +387,7 @@ Topic::~Topic(void)
 
 
 
-int Topic::send(int iPartition, uintptr_t uiSequenceNr, const char *pcMessage)
+int Topic::send(int iPartition, const char *pcMessage)
 {
 	int iResult;
 	size_t sizMessage;
@@ -399,19 +400,11 @@ int Topic::send(int iPartition, uintptr_t uiSequenceNr, const char *pcMessage)
 	sizMessage = strlen(pcMessage);
 	pvMessage = (void*)pcMessage;
 
-	pvOpaque = (void*)uiSequenceNr;
-/*
-	errno = 0;
-	iResult = rd_kafka_produce(m_ptTopic, iPartition, RD_KAFKA_MSG_F_COPY, (void*)pcMessage, sizMessage, NULL, 0, pvOpaque);
-	if( iResult==-1 )
-	{
-		iResult = errno;
-	}
-	else
-	{
-		iResult = 0;
-	}
-*/
+	/* Use the current sequence number for the new message.
+	 * Increase the sequence number counter.
+	 */
+	pvOpaque = (void*)(m_uiSequenceNr++);
+
 	tError = rd_kafka_producev(
 		/* Producer handle */
 		m_ptRk,
@@ -634,4 +627,3 @@ Topic *Producer::create_topic(lua_State *MUHKUH_LUA_STATE, const char *pcTopic, 
 	ptTopic = new Topic(m_ptCore, MUHKUH_LUA_STATE, pcTopic, ptLuaStateForTableAccessOptional, 3);
 	return ptTopic;
 }
-
