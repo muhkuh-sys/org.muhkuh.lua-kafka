@@ -24,7 +24,7 @@ extern "C" {
 
 
 typedef int RESULT_UINT;
-typedef int RESULT_INT_TRUE_OR_NIL_WITH_ERR;
+typedef int RESULT_INT_WITH_ERR;
 
 
 const char* version(void);
@@ -72,7 +72,7 @@ public:
 	Topic(RdKafkaCore *ptCore, lua_State *ptLuaState, const char *pcTopic, lua_State *ptLuaStateForConfig, int iConfigTableIndex);
 	~Topic(void);
 
-	RESULT_INT_TRUE_OR_NIL_WITH_ERR send(int iPartition, uintptr_t uiSequenceNr, const char *pcMessage);
+	RESULT_INT_WITH_ERR send(int iPartition, const char *pcMessage);
 
 	void poll(uintptr_t *puiUINT_OR_NIL, unsigned int *puiUINT_OUT, int iTimeout=0);
 	const char *error2string(int iError);
