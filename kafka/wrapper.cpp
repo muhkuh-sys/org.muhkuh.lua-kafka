@@ -444,32 +444,40 @@ int Topic::send(int iPartition, const char *pcMessage)
 	rd_kafka_resp_err_t tError;
 
 
-	/* Get the size of the message. */
-	sizMessage = strlen(pcMessage);
-	pvMessage = (void*)pcMessage;
+	/* Silently ignore NULL messages. */
+	if( pcMessage==NULL )
+	{
+		iResult = 0;
+	}
+	else
+	{
+		/* Get the size of the message. */
+		sizMessage = strlen(pcMessage);
+		pvMessage = (void*)pcMessage;
 
-	/* Use the current sequence number for the new message.
-	 * Increase the sequence number counter.
-	 */
-	pvOpaque = (void*)(m_uiSequenceNr++);
+		/* Use the current sequence number for the new message.
+		 * Increase the sequence number counter.
+		 */
+		pvOpaque = (void*)(m_uiSequenceNr++);
 
-	tError = rd_kafka_producev(
-		/* Producer handle */
-		m_ptRk,
-		/* Topic object. */
-		RD_KAFKA_V_RKT(m_ptTopic),
-		/* Make a copy of the payload. */
-		RD_KAFKA_V_MSGFLAGS(RD_KAFKA_MSG_F_COPY),
-		/* Message value and length */
-		RD_KAFKA_V_VALUE(pvMessage, sizMessage),
-		/* Per-Message opaque, provided in
-		 * delivery report callback as
-		 * msg_opaque. */
-		RD_KAFKA_V_OPAQUE(pvOpaque),
-		/* End sentinel */
-		RD_KAFKA_V_END
-	);
-	iResult = (int)tError;
+		tError = rd_kafka_producev(
+			/* Producer handle */
+			m_ptRk,
+			/* Topic object. */
+			RD_KAFKA_V_RKT(m_ptTopic),
+			/* Make a copy of the payload. */
+			RD_KAFKA_V_MSGFLAGS(RD_KAFKA_MSG_F_COPY),
+			/* Message value and length */
+			RD_KAFKA_V_VALUE(pvMessage, sizMessage),
+			/* Per-Message opaque, provided in
+			 * delivery report callback as
+			 * msg_opaque. */
+			RD_KAFKA_V_OPAQUE(pvOpaque),
+			/* End sentinel */
+			RD_KAFKA_V_END
+		);
+		iResult = (int)tError;
+	}
 
 	return iResult;
 }
