@@ -56,6 +56,7 @@ public:
 	rd_kafka_t *_getRk(void);
 
 	void poll(int iTimeout, void **ppvMsgOpaque, unsigned int *puiFailures);
+	int flush(int iTimeout);
 private:
 	void setClientId(rd_kafka_conf_t *ptConf);
 	int load_conf(lua_State *lua, rd_kafka_conf_t *conf, int idx);
@@ -103,6 +104,8 @@ public:
 	~Producer(void);
 
 	void poll(uintptr_t *puiUINT_OR_NIL, unsigned int *puiUINT_OUT, int iTimeout=0);
+	RESULT_INT_WITH_ERR flush(int iTimeout);
+	const char *error2string(int iError);
 
 	Topic *create_topic(lua_State *MUHKUH_LUA_STATE, const char *pcTopic, lua_State *ptLuaStateForTableAccessOptional);
 

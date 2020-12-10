@@ -289,6 +289,19 @@ void RdKafkaCore::poll(int iTimeout, void **ppvMsgOpaque, unsigned int *puiFailu
 
 
 
+int RdKafkaCore::flush(int iTimeout)
+{
+	rd_kafka_resp_err_t tResult;
+	int iResult;
+
+
+	tResult = rd_kafka_flush(m_ptRk, iTimeout);
+	iResult = (int)(tResult);
+	return iResult;
+}
+
+
+
 int RdKafkaCore::load_conf(lua_State *lua, rd_kafka_conf_t *conf, int idx)
 {
   if (!conf) {
@@ -662,6 +675,28 @@ void Producer::poll(uintptr_t *puiUINT_OR_NIL, unsigned int *puiUINT_OUT, int iT
 
 	*puiUINT_OR_NIL = (uintptr_t)pvMsgOpaque;
 	*puiUINT_OUT = uiFailures;
+}
+
+
+
+int Producer::flush(int iTimeout)
+{
+	int iResult;
+
+
+	iResult = m_ptCore->flush(iTimeout);
+	return iResult;
+}
+
+
+
+const char *Producer::error2string(int iError)
+{
+	rd_kafka_resp_err_t tError;
+
+
+	tError = (rd_kafka_resp_err_t)iError;
+	return rd_kafka_err2str(tError);
 }
 
 
