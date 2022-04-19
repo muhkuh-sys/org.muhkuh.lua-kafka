@@ -28,8 +28,8 @@ LIST(APPEND PRJ_CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=''")
 
 ExternalProject_Add(TARGET_libressl
                     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/libressl
-                    URL ${CMAKE_CURRENT_SOURCE_DIR}/libressl-3.1.4.tar.gz
-                    URL_HASH SHA1=084a9c99eaaa37427a50247dc5862087f1804f88
+                    URL ${CMAKE_CURRENT_SOURCE_DIR}/libressl-3.4.3.tar.gz
+                    URL_HASH SHA1=b770c85cfec981d1003c0570500ad7382459c459
                     PATCH_COMMAND "${PYTHON_EXECUTABLE}" ${CMAKE_HOME_DIRECTORY}/../cmake/tools/apply_patches.py --working-folder ${CMAKE_CURRENT_BINARY_DIR}/libressl/src/TARGET_libressl --patch-folder ${CMAKE_CURRENT_SOURCE_DIR}/patches --strip 1
                     CMAKE_ARGS ${PRJ_CMAKE_ARGS}
                     INSTALL_COMMAND make install DESTDIR=${CMAKE_CURRENT_BINARY_DIR}/install
