@@ -1,0 +1,13 @@
+diff -uNr librdkafka-1.6.2/src/CMakeLists.txt librdkafka-1.6.2_patched/src/CMakeLists.txt
+--- librdkafka-1.6.2/src/CMakeLists.txt	2021-11-17 16:17:14.000000000 +0100
++++ librdkafka-1.6.2_patched/src/CMakeLists.txt	2022-04-22 10:11:02.831707184 +0200
+@@ -229,6 +229,9 @@
+     find_package(OpenSSL REQUIRED)
+     target_include_directories(rdkafka PUBLIC ${OPENSSL_INCLUDE_DIR})
+     target_link_libraries(rdkafka PUBLIC OpenSSL::SSL OpenSSL::Crypto)
++    if(WIN32)
++      target_link_libraries(rdkafka PUBLIC bcrypt ws2_32)
++    endif(WIN32)
+     get_target_property(OPENSSL_TARGET_TYPE OpenSSL::SSL TYPE)
+     if(OPENSSL_CRYPTO_LIBRARY MATCHES "\\.a$")
+       target_compile_definitions(rdkafka PUBLIC WITH_STATIC_LIB_libcrypto)
