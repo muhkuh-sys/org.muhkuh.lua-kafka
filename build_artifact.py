@@ -35,7 +35,7 @@ strCfg_jonchkiHerePath = os.path.join(
     'jonchki'
 )
 # This is the Jonchki version to use.
-strCfg_jonchkiVersion = '0.0.7.1'
+strCfg_jonchkiVersion = '0.0.11.1'
 # Look in this folder for Jonchki archives before downloading them.
 strCfg_jonchkiLocalArchives = os.path.join(
     strCfg_projectFolder,
@@ -54,10 +54,6 @@ strCfg_jonchkiInstallationFolder = os.path.join(
 # Possible values are "debug", "info", "warning", "error" and "fatal".
 strCfg_jonchkiVerbose = 'info'
 
-strCfg_jonchkiLog = os.path.join(
-    strCfg_workingFolder,
-    'jonchki.log'
-)
 strCfg_jonchkiSystemConfiguration = os.path.join(
     strCfg_projectFolder,
     'jonchki',
@@ -67,18 +63,6 @@ strCfg_jonchkiProjectConfiguration = os.path.join(
     strCfg_projectFolder,
     'jonchki',
     'jonchkicfg.xml'
-)
-strCfg_jonchkiFinalizer = os.path.join(
-    strCfg_projectFolder,
-    'finalizer.lua'
-)
-strCfg_jonchkiDependencyLog51 = os.path.join(
-    strCfg_projectFolder,
-    'dependency-log-lua5.1.xml'
-)
-strCfg_jonchkiDependencyLog54 = os.path.join(
-    strCfg_projectFolder,
-    'dependency-log-lua5.4.xml'
 )
 
 # -
@@ -276,10 +260,20 @@ astrCmd = [
     strJonchki,
     'install-dependencies',
     '--verbose', strCfg_jonchkiVerbose,
-    '--logfile', strCfg_jonchkiLog,
     '--syscfg', strCfg_jonchkiSystemConfiguration,
     '--prjcfg', strCfg_jonchkiProjectConfiguration,
-    '--dependency-log', strCfg_jonchkiDependencyLog51
+
+    '--logfile', os.path.join(
+        strCfg_workingFolder,
+        'lua5.4',
+        'build_requirements',
+        'jonchki.log'
+    ),
+
+    '--dependency-log', os.path.join(
+        strCfg_projectFolder,
+        'dependency-log-lua5.4.xml'
+    )
 ]
 astrCmd.extend(astrJONCHKI_SYSTEM)
 astrCmd.append('--build-dependencies')
