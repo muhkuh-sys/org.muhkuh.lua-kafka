@@ -4,10 +4,6 @@ PROJECT("libressl")
 
 INCLUDE(ExternalProject)
 
-# Python is used for some test scripts.
-FIND_PACKAGE(PythonInterp 2.7 REQUIRED)
-
-
 #----------------------------------------------------------------------------
 #
 # Build the project.
@@ -30,7 +26,7 @@ ExternalProject_Add(TARGET_libressl
                     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/libressl
                     URL ${CMAKE_CURRENT_SOURCE_DIR}/libressl-3.7.3.tar.gz
                     URL_HASH SHA1=4a735f112049eb1ac98910051b5587986398e845
-#                    PATCH_COMMAND "${PYTHON_EXECUTABLE}" ${CMAKE_HOME_DIRECTORY}/../cmake/tools/apply_patches.py --working-folder ${CMAKE_CURRENT_BINARY_DIR}/libressl/src/TARGET_libressl --patch-folder ${CMAKE_CURRENT_SOURCE_DIR}/patches --strip 1
+#                    PATCH_COMMAND "${PYTHON_INTERPRETER}" ${CMAKE_HOME_DIRECTORY}/../cmake/tools/apply_patches.py --working-folder ${CMAKE_CURRENT_BINARY_DIR}/libressl/src/TARGET_libressl --patch-folder ${CMAKE_CURRENT_SOURCE_DIR}/patches --strip 1
                     CMAKE_ARGS ${PRJ_CMAKE_ARGS}
                     INSTALL_COMMAND make install DESTDIR=${CMAKE_CURRENT_BINARY_DIR}/install
 )

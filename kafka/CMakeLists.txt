@@ -29,7 +29,6 @@ IF((${BUILDCFG_ONLY_JONCHKI_CFG} STREQUAL "OFF"))
 	INCLUDE(${CMAKE_HOME_DIRECTORY}/cmake/muhkuh_lua.cmake)
 
 	ENABLE_TESTING()
-	FIND_PACKAGE(PythonInterp 2.7 REQUIRED)
 
 	FIND_PACKAGE(SWIG REQUIRED)
 
@@ -85,7 +84,7 @@ IF((${BUILDCFG_ONLY_JONCHKI_CFG} STREQUAL "OFF"))
 	IF((${CMAKE_SYSTEM_NAME} STREQUAL "Windows") AND (${CMAKE_COMPILER_IS_GNUCC}))
 		# Here are the MinGW specific tests.
 		ADD_TEST(NAME kafka_MinGW_DLL_dependencies
-		         COMMAND "${PYTHON_EXECUTABLE}" ${TEST_SCRIPT_FOLDER}/mingw_dll_dependencies.py -u lua5.1 -u lua5.2 -u lua5.3 $<TARGET_FILE:TARGET_kafka>)
+		         COMMAND "${PYTHON_INTERPRETER}" ${TEST_SCRIPT_FOLDER}/mingw_dll_dependencies.py -u lua5.1 -u lua5.2 -u lua5.3 $<TARGET_FILE:TARGET_kafka>)
 	ENDIF((${CMAKE_SYSTEM_NAME} STREQUAL "Windows") AND (${CMAKE_COMPILER_IS_GNUCC}))
 
 	#----------------------------------------------------------------------------
@@ -139,8 +138,8 @@ IF((${BUILDCFG_ONLY_JONCHKI_CFG} STREQUAL "OFF"))
 	ADD_CUSTOM_TARGET(pack
 	                  COMMAND ${CMAKE_MAKE_PROGRAM}
 	                  COMMAND ${CMAKE_MAKE_PROGRAM} package
-	                  COMMAND "${PYTHON_EXECUTABLE}" ${CMAKE_HOME_DIRECTORY}/cmake/tools/generate_hash.py ${CPACK_OUTPUT_FILE_PREFIX}/lua${BUILDCFG_LUA_VERSION}-kafka-${PROJECT_VERSION}-${JONCHKI_PLATFORM}.xml
-	                  COMMAND "${PYTHON_EXECUTABLE}" ${CMAKE_HOME_DIRECTORY}/cmake/tools/generate_hash.py ${CPACK_OUTPUT_FILE_PREFIX}/lua${BUILDCFG_LUA_VERSION}-kafka-${PROJECT_VERSION}-${JONCHKI_PLATFORM}.tar.xz
+	                  COMMAND "${PYTHON_INTERPRETER}" ${CMAKE_HOME_DIRECTORY}/cmake/tools/generate_hash.py ${CPACK_OUTPUT_FILE_PREFIX}/lua${BUILDCFG_LUA_VERSION}-kafka-${PROJECT_VERSION}-${JONCHKI_PLATFORM}.xml
+	                  COMMAND "${PYTHON_INTERPRETER}" ${CMAKE_HOME_DIRECTORY}/cmake/tools/generate_hash.py ${CPACK_OUTPUT_FILE_PREFIX}/lua${BUILDCFG_LUA_VERSION}-kafka-${PROJECT_VERSION}-${JONCHKI_PLATFORM}.tar.xz
 	                  COMMENT "Pack the artifact and generate the hashes...")
 
 

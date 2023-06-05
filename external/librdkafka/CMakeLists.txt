@@ -4,16 +4,6 @@ PROJECT("librdkafka")
 
 INCLUDE(ExternalProject)
 
-# Python is used for the patch tool.
-# Python is used for some test scripts.
-IF(CMAKE_VERSION VERSION_LESS 3.12.0)
-	FIND_PACKAGE(PythonInterp 3 REQUIRED)
-	SET(PYTHON_INTERPRETER "${PYTHON_EXECUTABLE}")
-ELSE(CMAKE_VERSION VERSION_LESS 3.12.0)
-	FIND_PACKAGE(Python3 REQUIRED COMPONENTS Interpreter)
-	SET(PYTHON_INTERPRETER "${Python3_EXECUTABLE}")
-ENDIF(CMAKE_VERSION VERSION_LESS 3.12.0)
-
 #----------------------------------------------------------------------------
 #
 # Build the project.
@@ -52,7 +42,7 @@ ExternalProject_Add(TARGET_librdkafka
                     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/librdkafka
                     URL ${CMAKE_CURRENT_SOURCE_DIR}/librdkafka-2.1.1.tar.gz
                     URL_HASH SHA1=fb4f717dc82c5a11304e1d689d011a04c2dcff21
-                    PATCH_COMMAND "${PYTHON_EXECUTABLE}" ${CMAKE_HOME_DIRECTORY}/../cmake/tools/apply_patches.py --working-folder ${CMAKE_CURRENT_BINARY_DIR}/librdkafka/src/TARGET_librdkafka --patch-folder ${CMAKE_CURRENT_SOURCE_DIR}/patches --strip 1
+                    PATCH_COMMAND "${PYTHON_INTERPRETER}" ${CMAKE_HOME_DIRECTORY}/../cmake/tools/apply_patches.py --working-folder ${CMAKE_CURRENT_BINARY_DIR}/librdkafka/src/TARGET_librdkafka --patch-folder ${CMAKE_CURRENT_SOURCE_DIR}/patches --strip 1
                     CMAKE_ARGS ${PRJ_CMAKE_ARGS}
                     INSTALL_COMMAND make install DESTDIR=${CMAKE_CURRENT_BINARY_DIR}/install
 )
