@@ -154,6 +154,25 @@ if tPlatform['host_distribution_id'] == 'ubuntu':
             ]
             strMake = 'make'
 
+        elif tPlatform['cpu_architecture'] == 'riscv64':
+            # Build on linux for riscv64.
+
+            astrCMAKE_COMPILER = [
+                '-DCMAKE_TOOLCHAIN_FILE=%s/cmake/toolchainfiles/toolchain_ubuntu_riscv64.cmake' % strCfg_projectFolder
+            ]
+            astrCMAKE_PLATFORM = [
+                '-DJONCHKI_PLATFORM_DIST_ID=%s' % tPlatform['distribution_id'],
+                '-DJONCHKI_PLATFORM_DIST_VERSION=%s' % tPlatform['distribution_version'],
+                '-DJONCHKI_PLATFORM_CPU_ARCH=%s' % tPlatform['cpu_architecture']
+            ]
+
+            astrJONCHKI_SYSTEM = [
+                '--distribution-id %s' % tPlatform['distribution_id'],
+                '--distribution-version %s' % tPlatform['distribution_version'],
+                '--cpu-architecture %s' % tPlatform['cpu_architecture']
+            ]
+            strMake = 'make'
+
         else:
             raise Exception('Unknown CPU architecture: "%s"' % tPlatform['cpu_architecture'])
 
