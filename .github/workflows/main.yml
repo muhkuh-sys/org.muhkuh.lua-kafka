@@ -59,16 +59,6 @@ jobs:
           distribution-id: ubuntu
           distribution-version: "22.04"
           cpu-architecture: riscv64
-        - # Windows x86
-          image: ghcr.io/muhkuh-sys/mbs_ubuntu_2004_x86_64:latest
-          distribution-id: windows
-          distribution-version: ""
-          cpu-architecture: x86
-        - # Windows x86_64
-          image: ghcr.io/muhkuh-sys/mbs_ubuntu_2004_x86_64:latest
-          distribution-id: windows
-          distribution-version: ""
-          cpu-architecture: x86_64
     container: ${{ matrix.platform.image }}
     steps:
     - name: Checkout repository
