@@ -210,8 +210,6 @@ else:
 astrFolders = [
     strCfg_workingFolder,
     os.path.join(strCfg_workingFolder, 'external'),
-    os.path.join(strCfg_workingFolder, 'lua5.1'),
-    os.path.join(strCfg_workingFolder, 'lua5.1', 'build_requirements'),
     os.path.join(strCfg_workingFolder, 'lua5.4'),
     os.path.join(strCfg_workingFolder, 'lua5.4', 'build_requirements'),
 ]
@@ -228,10 +226,10 @@ strJonchki = jonchkihere.install(
 
 # ---------------------------------------------------------------------------
 #
-# Get the build requirements for LUA5.1 and the externals.
+# Get the build requirements for LUA5.4 and the externals.
 #
-strCwd = os.path.join(strCfg_workingFolder, 'lua5.1', 'build_requirements')
-for strMatch in glob.iglob(os.path.join(strCwd, 'lua5.1-kafka-*.xml')):
+strCwd = os.path.join(strCfg_workingFolder, 'lua5.4', 'build_requirements')
+for strMatch in glob.iglob(os.path.join(strCwd, 'lua5.4-kafka-*.xml')):
     os.remove(strMatch)
 
 astrCmd = [
@@ -241,7 +239,7 @@ astrCmd = [
     '-DWORKING_DIR=%s' % strCfg_workingFolder,
     '-DBUILDCFG_ONLY_JONCHKI_CFG="ON"',
     '-DBUILDCFG_LUA_USE_SYSTEM="OFF"',
-    '-DBUILDCFG_LUA_VERSION="5.1"'
+    '-DBUILDCFG_LUA_VERSION="5.4"'
 ]
 astrCmd.extend(astrCMAKE_COMPILER)
 astrCmd.extend(astrCMAKE_PLATFORM)
@@ -249,9 +247,11 @@ astrCmd.append(strCfg_projectFolder)
 subprocess.check_call(' '.join(astrCmd), shell=True, cwd=strCwd, env=astrEnv)
 subprocess.check_call(strMake, shell=True, cwd=strCwd, env=astrEnv)
 
-astrMatch = glob.glob(os.path.join(strCwd, 'lua5.1-kafka-*.xml'))
-if len(astrMatch) != 1:
-    raise Exception('No match found for "lua5.1-kafka-*.xml".')
+astrMatch = glob.glob(os.path.join(strCwd, 'lua5.4-kafka-*.xml'))
+if len(astrMatch) == 0:
+    raise Exception('No match found for "lua5.4-kafka-*.xml".')
+if len(astrMatch) > 1:
+    raise Exception('Multiple matches found for "lua5.4-kafka-*.xml".')
 
 astrCmd = [
     strJonchki,
@@ -283,67 +283,6 @@ astrCmd.append(os.path.join(strCfg_projectFolder, 'external'))
 strCwd = os.path.join(strCfg_workingFolder, 'external')
 subprocess.check_call(' '.join(astrCmd), shell=True, cwd=strCwd, env=astrEnv)
 subprocess.check_call(strMake, shell=True, cwd=strCwd, env=astrEnv)
-
-# ---------------------------------------------------------------------------
-#
-# Build the LUA5.1 version.
-#
-astrCmd = [
-    'cmake',
-    '-DCMAKE_INSTALL_PREFIX=""',
-    '-DPRJ_DIR=%s' % strCfg_projectFolder,
-    '-DWORKING_DIR=%s' % strCfg_workingFolder,
-    '-DBUILDCFG_LUA_USE_SYSTEM="OFF"',
-    '-DBUILDCFG_LUA_VERSION="5.1"'
-]
-astrCmd.extend(astrCMAKE_COMPILER)
-astrCmd.extend(astrCMAKE_PLATFORM)
-astrCmd.append(strCfg_projectFolder)
-strCwd = os.path.join(strCfg_workingFolder, 'lua5.1')
-subprocess.check_call(' '.join(astrCmd), shell=True, cwd=strCwd, env=astrEnv)
-subprocess.check_call('%s pack' % strMake, shell=True, cwd=strCwd, env=astrEnv)
-
-# ---------------------------------------------------------------------------
-#
-# Get the build requirements for LUA5.4.
-#
-strCwd = os.path.join(strCfg_workingFolder, 'lua5.4', 'build_requirements')
-for strMatch in glob.iglob(os.path.join(strCwd, 'lua5.4-kafka-*.xml')):
-    os.remove(strMatch)
-
-astrCmd = [
-    'cmake',
-    '-DCMAKE_INSTALL_PREFIX=""',
-    '-DPRJ_DIR=%s' % strCfg_projectFolder,
-    '-DWORKING_DIR=%s' % strCfg_workingFolder,
-    '-DBUILDCFG_ONLY_JONCHKI_CFG="ON"',
-    '-DBUILDCFG_LUA_USE_SYSTEM="OFF"',
-    '-DBUILDCFG_LUA_VERSION="5.4"'
-]
-astrCmd.extend(astrCMAKE_COMPILER)
-astrCmd.extend(astrCMAKE_PLATFORM)
-astrCmd.append(strCfg_projectFolder)
-subprocess.check_call(' '.join(astrCmd), shell=True, cwd=strCwd, env=astrEnv)
-subprocess.check_call(strMake, shell=True, cwd=strCwd, env=astrEnv)
-
-astrMatch = glob.glob(os.path.join(strCwd, 'lua5.4-kafka-*.xml'))
-if len(astrMatch) != 1:
-    raise Exception('No match found for "lua5.4-kafka-*.xml".')
-
-astrCmd = [
-    strJonchki,
-    'install-dependencies',
-    '--verbose', strCfg_jonchkiVerbose,
-    '--logfile', strCfg_jonchkiLog,
-    '--syscfg', strCfg_jonchkiSystemConfiguration,
-    '--prjcfg', strCfg_jonchkiProjectConfiguration,
-    '--dependency-log', strCfg_jonchkiDependencyLog54
-]
-astrCmd.extend(astrJONCHKI_SYSTEM)
-astrCmd.append('--build-dependencies')
-astrCmd.append(astrMatch[0])
-subprocess.check_call(' '.join(astrCmd), shell=True, cwd=strCwd, env=astrEnv)
-
 
 # ---------------------------------------------------------------------------
 #
