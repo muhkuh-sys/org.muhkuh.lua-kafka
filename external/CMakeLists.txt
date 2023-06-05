@@ -4,7 +4,7 @@ PROJECT("external")
 
 INCLUDE(${PRJ_DIR}/cmake/platform.cmake)
 
-SET(net.zlib-zlib_DIR "${CMAKE_BINARY_DIR}/../lua5.1/build_requirements/jonchki/install/dev/cmake")
+SET(net.zlib-zlib_DIR "${CMAKE_BINARY_DIR}/../lua5.4/build_requirements/jonchki/install/dev/cmake")
 
 
 #----------------------------------------------------------------------------
