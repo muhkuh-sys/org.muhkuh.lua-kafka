@@ -48,8 +48,16 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-      with:
-        set-safe-directory: true
+    - name: test1
+      run: whoami
+    - name: test2
+      run: id
+    - name: test3
+      run: ls -l
+    - name: test4
+      run: chown -R $USER *
+    - name: test5
+      run: ls -l
     - name: Build
       run: ./build_artifact.py ${{ matrix.platform.distribution-id }} ${{ matrix.platform.distribution-version }} ${{ matrix.platform.cpu-architecture }}
     - name: Upload artifacts
