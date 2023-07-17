@@ -40,8 +40,8 @@ LIST(APPEND PRJ_CMAKE_ARGS "-DWITH_SASL=OFF")
 
 ExternalProject_Add(TARGET_librdkafka
                     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/librdkafka
-                    URL ${CMAKE_CURRENT_SOURCE_DIR}/librdkafka-2.1.1.tar.gz
-                    URL_HASH SHA1=fb4f717dc82c5a11304e1d689d011a04c2dcff21
+                    URL ${CMAKE_CURRENT_SOURCE_DIR}/librdkafka-2.2.0.tar.gz
+                    URL_HASH SHA1=83c7ff936b03a0e53dd0e5c20ba2eeb12b8a25cd
                     PATCH_COMMAND "${PYTHON_INTERPRETER}" ${CMAKE_HOME_DIRECTORY}/../cmake/tools/apply_patches.py --working-folder ${CMAKE_CURRENT_BINARY_DIR}/librdkafka/src/TARGET_librdkafka --patch-folder ${CMAKE_CURRENT_SOURCE_DIR}/patches --strip 1
                     CMAKE_ARGS ${PRJ_CMAKE_ARGS}
                     INSTALL_COMMAND make install DESTDIR=${CMAKE_CURRENT_BINARY_DIR}/install
