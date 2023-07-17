@@ -53,11 +53,7 @@ jobs:
     - name: test2
       run: id
     - name: test3
-      run: ls -l
-    - name: test4
-      run: chown -R $USER *
-    - name: test5
-      run: ls -l
+      run: ls -lR
     - name: Build
       run: ./build_artifact.py ${{ matrix.platform.distribution-id }} ${{ matrix.platform.distribution-version }} ${{ matrix.platform.cpu-architecture }}
     - name: Upload artifacts
